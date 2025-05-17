@@ -1,91 +1,32 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Prayer Times</title>
-    <style>
-      body {
-        font-family: system-ui, sans-serif;
-        max-width: 800px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-        background-color: #f9f9f9;
-        color: #333;
-      }
-
-      h1 {
-        text-align: center;
-        font-size: 2rem;
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-      }
-
-      label {
-        font-weight: bold;
-        margin-right: 0.5rem;
-      }
-
-      select {
-        padding: 0.4rem 0.6rem;
-        font-size: 1rem;
-        margin-bottom: 1rem;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-        background: white;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-      }
-
-      th,
-      td {
-        padding: 0.6rem;
-        text-align: center;
-        border: 1px solid #ccc;
-      }
-
-      th {
-        background-color: #eef2f7;
-        font-weight: bold;
-        color: #333;
-      }
-
-      tr:nth-child(even) {
-        background-color: #f6f8fa;
-      }
-
-      #table-container {
-        animation: fadeIn 0.3s ease-in-out;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-    </style>
-
-  </head>
-<body>
-  <h1>Prayer Times</h1>
-
-  <label for="mosque-select">Select a date:</label>
-  <select id="mosque-select">
-    <option value="">-- Loading dates... --</option>
-  </select>
-
-  <div id="table-container">
-    <p>Select a date to view prayer times.</p>
-  </div>
-
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prayer Times & Khutbah/Juma'</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; background-color: #f9f9f9; color: #333; }
+    h1 { text-align: center; font-size: 2rem; color: #2c3e50; margin-bottom: 1rem; }
+    .tabs { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    .tab { padding: 0.5rem 1rem; cursor: pointer; border-radius: 0.5rem; background: #eee; }
+    .tab.active { background: #2c3e50; color: white; }
+    table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    th, td { padding: 0.6rem; text-align: center; border: 1px solid #ccc; }
+    th { background-color: #eef2f7; }
+    tr:nth-child(even) { background-color: #f6f8fa; }
+  </style>
+</head>
+<body>
+  <h1>Prayer Times & Khutbah/Juma'</h1>
+  <div class="tabs">
+    <div class="tab active" data-tab="prayers">Regular Prayers</div>
+    <div class="tab" data-tab="khutbah">Khutbah & Juma'</div>
+  </div>
+  <div id="table-container">
+    <p>Loading data...</p>
+  </div>
   <script src="script.js"></script>
 </body>
-
 </html>
