@@ -1,5 +1,6 @@
 [
   { "filename": "east-london.xlsx", "displayName": "East London Mosque" },
   { "filename": "manchester-central.xlsx", "displayName": "Manchester Central" },
-    { "filename": "birmingham.xlsx", "displayName": "Birmingham Central" }
+    { "filename": "birmingham.xlsx", "displayName": "Birmingham Central" },
+    { "filename": "london-west.xlsx", "displayName": "London west"  }
 ]
