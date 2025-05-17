@@ -56,7 +56,7 @@
         Asr: excelTimeToString(r.Asr),
         Maghrib: excelTimeToString(r.Maghrib),
         Isha: excelTimeToString(r.Isha)
-      }));
+      })).sort((a,b) => a.Mosque.localeCompare(b.Mosque)); // sort by mosque name alphabetically  
       renderTable(cols, rows);
     } else {
       const cols = ['Mosque', 'Khutbah', "Juma"];
