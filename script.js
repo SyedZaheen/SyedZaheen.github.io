@@ -81,7 +81,7 @@
     }
   }
 
-  function renderTable(columns, rows, clickable = false) {
+  function renderTable(columns, rows, isMainTable = false) {
     const container = document.getElementById('table-container');
     container.innerHTML = '';
     
@@ -93,7 +93,11 @@
     const table = document.createElement('table');
     const thead = table.createTHead();
     const hr = thead.insertRow();
-    columns.forEach(col => {
+    
+    // Add columns including action column if this is main table
+    const displayColumns = isMainTable ? [...columns, 'Monthly timing'] : columns;
+    
+    displayColumns.forEach(col => {
       const th = document.createElement('th'); 
       th.textContent = col; 
       hr.appendChild(th);
@@ -103,17 +107,40 @@
     rows.forEach(row => {
       const tr = tbody.insertRow();
       
-      if (clickable) {
-        tr.classList.add('mosque-row');
-        tr.addEventListener('click', () => {
-          showMosqueData(row.Mosque);
-        });
-      }
-      
       columns.forEach(col => {
         const td = tr.insertCell();
-        td.textContent = row[col] || '-';
+        
+        if (col === 'Address' && row[col] && row[col] !== '-' && isMainTable) {
+          // Create Google Maps link for address
+          const link = document.createElement('a');
+          link.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(row[col])}`;
+          link.textContent = row[col];
+          link.target = '_blank'; // Open in new tab
+          link.rel = 'noopener noreferrer'; // Security best practice
+          td.appendChild(link);
+        } else {
+          td.textContent = row[col] || '-';
+        }
       });
+      
+      // Add action button if this is the main table
+      if (isMainTable) {
+        const actionCell = tr.insertCell();
+        const viewButton = document.createElement('button');
+        viewButton.textContent = 'Monthly Prayer Timings';
+        viewButton.style.padding = '0.3rem 0.5rem';
+        viewButton.style.backgroundColor = '#3498db';
+        viewButton.style.color = 'white';
+        viewButton.style.border = 'none';
+        viewButton.style.borderRadius = '0.25rem';
+        viewButton.style.cursor = 'pointer';
+        
+        viewButton.addEventListener('click', () => {
+          showMosqueData(row.Mosque);
+        });
+        
+        actionCell.appendChild(viewButton);
+      }
     });
     
     container.appendChild(table);
@@ -150,7 +177,7 @@
       Juma: excelTimeToString(r.Juma)
     })).sort((a, b) => a.Mosque.localeCompare(b.Mosque));
     
-    // Render the main table with clickable rows
+    // Render the main table with Action column
     renderTable(cols, filteredRows, true);
   }
 
