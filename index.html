@@ -10,7 +10,10 @@
     h1 { text-align: center; font-size: 2rem; color: #2c3e50; margin-bottom: 1rem; }
     .back-button { padding: 0.5rem 1rem; cursor: pointer; border-radius: 0.5rem; background: #2c3e50; color: white; display: none; margin-bottom: 1rem; border: none; }
     .search-container { margin-bottom: 1rem; }
-    .search-input { width: 100%; padding: 0.5rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 0.25rem; }
+    .search-input-group { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .search-input { flex-grow: 1; padding: 0.5rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 0.25rem; }
+    .clear-button { padding: 0.5rem 1rem; cursor: pointer; background: #e74c3c; color: white; border: none; border-radius: 0.25rem; display: none; }
+    .search-results-heading { margin-top: 0.5rem; margin-bottom: 1rem; color: #2c3e50; display: none; }
     table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     th, td { padding: 0.6rem; text-align: center; border: 1px solid #ccc; }
     th { background-color: #eef2f7; }
@@ -26,7 +29,11 @@
   <h2 id="mosque-title" class="mosque-title"></h2>
   
   <div id="search-container" class="search-container" style="display: none;">
-    <input type="text" id="mosque-search" class="search-input" placeholder="Search mosque by name...">
+    <div class="search-input-group">
+      <input type="text" id="mosque-search" class="search-input" placeholder="Search mosque by name...">
+      <button id="clear-search" class="clear-button">Clear</button>
+    </div>
+    <h3 id="search-results-heading" class="search-results-heading">Search Results</h3>
   </div>
   
   <div id="table-container">

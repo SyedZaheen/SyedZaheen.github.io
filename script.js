@@ -35,34 +35,6 @@
     });
   }
 
-  // Levenshtein edit distance calculation
-  function editDistance(s1, s2) {
-    s1 = s1.toLowerCase();
-    s2 = s2.toLowerCase();
-    
-    // Create a matrix of size (s1.length + 1) x (s2.length + 1)
-    const matrix = Array(s1.length + 1).fill().map(() => Array(s2.length + 1).fill(0));
-    
-    // Fill the first row and column
-    for (let i = 0; i <= s1.length; i++) matrix[i][0] = i;
-    for (let j = 0; j <= s2.length; j++) matrix[0][j] = j;
-    
-    // Fill in the rest of the matrix
-    for (let i = 1; i <= s1.length; i++) {
-      for (let j = 1; j <= s2.length; j++) {
-        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1,      // deletion
-          matrix[i][j - 1] + 1,      // insertion
-          matrix[i - 1][j - 1] + cost // substitution
-        );
-      }
-    }
-    
-    // Return the value in the bottom right corner
-    return matrix[s1.length][s2.length];
-  }
-
   async function loadData() {
     try {
       const res = await fetch(FILE_PATH);
@@ -151,10 +123,16 @@
     currentView = 'main';
     currentMosque = null;
     
-    // Hide back button and mosque title, show search bar
+    // Hide back button, mosque title, and search results elements
     document.getElementById('back-button').style.display = 'none';
     document.getElementById('mosque-title').textContent = '';
     document.getElementById('search-container').style.display = 'block';
+    document.getElementById('search-results-heading').style.display = 'none';
+    document.getElementById('clear-search').style.display = 'none';
+    
+    // Clear search input if it exists
+    const searchInput = document.getElementById('mosque-search');
+    if (searchInput) searchInput.value = '';
     
     // Define columns for main table (including all prayer times)
     const cols = ['Mosque', 'Address', 'Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha', 'Khutbah', 'Juma'];
@@ -199,29 +177,59 @@
   }
 
   function filterMosques(searchTerm) {
+    const searchHeading = document.getElementById('search-results-heading');
+    const clearButton = document.getElementById('clear-search');
+
     if (!searchTerm.trim()) {
-      // If search is empty, show all mosques
+      // If search is empty, show all mosques and hide search results elements
       showMainTable();
+      searchHeading.style.display = 'none';
+      clearButton.style.display = 'none';
       return;
     }
 
+    // Show the search results heading and clear button
+    searchHeading.style.display = 'block';
+    clearButton.style.display = 'block';
+
     const cols = ['Mosque', 'Address', 'Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha', 'Khutbah', 'Juma'];
     
-    // Calculate edit distance for each row and store with the row data
-    const rowsWithDistance = filteredRows.map(row => {
-      const distance = editDistance(searchTerm, row.Mosque);
-      return { row, distance };
+    // Convert search term to lowercase and split into tokens (words)
+    const searchTokens = searchTerm.toLowerCase().split(/\s+/).filter(token => token.length > 0);
+    
+    // Filter mosques that match any of the search tokens
+    const filteredResults = filteredRows.filter(row => {
+      const mosqueName = row.Mosque.toLowerCase();
+      
+      // Check if any search token is contained in the mosque name
+      return searchTokens.some(token => mosqueName.includes(token));
     });
     
-    // Filter rows based on maximum allowed edit distance
-    const maxDistance = 5;
-    const filteredWithDistance = rowsWithDistance.filter(item => item.distance <= maxDistance);
+    // Score results by relevance (how many tokens match)
+    const scoredResults = filteredResults.map(row => {
+      const mosqueName = row.Mosque.toLowerCase();
+      let score = 0;
+      
+      // Increase score for each matching token
+      searchTokens.forEach(token => {
+        if (mosqueName.includes(token)) score++;
+        // Bonus points for exact word matches
+        if (mosqueName.split(/\s+/).some(word => word === token)) score += 0.5;
+        // Additional bonus for prefix matches (starts with)
+        if (mosqueName.startsWith(token)) score += 1;
+      });
+      
+      return { row, score };
+    });
     
-    // Sort by edit distance (closest matches first)
-    filteredWithDistance.sort((a, b) => a.distance - b.distance);
+    // Sort by score (highest first)
+    scoredResults.sort((a, b) => b.score - a.score);
     
     // Extract just the row data for rendering
-    const sortedResults = filteredWithDistance.map(item => item.row);
+    const sortedResults = scoredResults.map(item => item.row);
+    
+    // Update search results heading with count
+    searchHeading.textContent = `Search Results (${sortedResults.length} mosque${sortedResults.length !== 1 ? 's' : ''} found)`;
     
     // Render sorted results
     renderTable(cols, sortedResults, true);
@@ -233,10 +241,18 @@
   // Setup search functionality
   function setupSearch() {
     const searchInput = document.getElementById('mosque-search');
+    const clearButton = document.getElementById('clear-search');
     
     searchInput.addEventListener('input', (e) => {
       const searchTerm = e.target.value;
       filterMosques(searchTerm);
+    });
+    
+    // Add functionality to clear button
+    clearButton.addEventListener('click', () => {
+      searchInput.value = '';
+      filterMosques('');
+      searchInput.focus(); // Return focus to the search input
     });
   }
 
